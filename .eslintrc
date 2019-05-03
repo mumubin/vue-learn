@@ -2,6 +2,9 @@
   "extends": [
     "plugin:vue/recommended"
   ],
+//  "rules": {
+//    "no-new": "off"
+//  },
   "parserOptions": {
     "parser": "babel-eslint",
     "sourceType": "module"

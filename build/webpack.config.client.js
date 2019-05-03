@@ -8,7 +8,9 @@ const ExtractPlugin = require("extract-text-webpack-plugin");
 
 const defaultPlugins = [
   new VueLoaderPlugin(),
-  new HTMLPlugin(),
+  new HTMLPlugin({
+    template: path.resolve(__dirname, "template.html")
+  }),
   new webpack.DefinePlugin({
     "process.env": {
       NODE_ENV: isDev ? '"development"' : '"production"'
@@ -27,7 +29,8 @@ const devServer = {
     errors: true
   },
   open: true,
-  hot: true
+  hot: true,
+  historyApiFallback: true
 };
 
 if (isDev) {
@@ -60,33 +63,54 @@ if (isDev) {
 } else {
   config = merge(baseConfig, {
     entry: {
-      app: path.resolve(__dirname, "../cient/index.js"),
+      app: path.resolve(__dirname, "../client/index.js"),
     },
     output: {filename: "[name].[ chunkhash:8].js"},
-    rules: [
-      {
-        test: /\.styl/,
-        use: ExtractPlugin.extract({
-          fallback: "style-loader",
-          use: [
-            "css-loader",
-            {
-              loader: "postcss-loader",
-              options: {
-                sourceMap: true
-              }
-            },
-            "stylus-loader"
-          ]
-        })
-      }
-    ],
+    module: {
+      rules: [
+        {
+          test: /\.styl/,
+          use: ExtractPlugin.extract({
+            fallback: "style-loader",
+            use: [
+              "css-loader",
+              {
+                loader: "postcss-loader",
+                options: {
+                  sourceMap: true
+                }
+              },
+              "stylus-loader"
+            ]
+          })
+        },
+        {
+          test: /\.stylus/,
+          use: ExtractPlugin.extract({
+            fallback: "style-loader",
+            use: [
+              "css-loader",
+              {
+                loader: "postcss-loader",
+                options: {
+                  sourceMap: true
+                }
+              },
+              "stylus-loader"
+            ]
+          })
+        }
+      ],
+    },
     optimization: {
       splitChunks: {
         chunks: 'all'
       },
       runtimeChunk: true
     },
+    plugins: defaultPlugins.concat([
+      new ExtractPlugin("styles.css")
+    ])
   });
 }
 module.exports = config;
